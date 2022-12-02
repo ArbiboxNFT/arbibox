@@ -102,7 +102,7 @@ contract ArbiBoxToken is IArbiBoxToken, Ownable, ERC721Checkpointable {
         IArbiBoxDescriptor _descriptor,
         IArbiBoxSeeder _seeder,
         IProxyRegistry _proxyRegistry
-    ) ERC721("ArbiBox", "SWEEPER") {
+    ) ERC721("ArbiBox", "ARBIBOX") {
         arbiboxTreasury = _arbiboxTreasury;
         minter = _minter;
         descriptor = _descriptor;
