@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-/// @title Interface for BoxDescriptor
+/// @title Interface for ArbiBoxDescriptor
 
 
 
 pragma solidity ^0.8.6;
 
-import { IBoxSeeder } from './IBoxSeeder.sol';
+import { IArbiBoxSeeder } from './IArbiBoxSeeder.sol';
 
-interface IBoxDescriptor {
+interface IArbiBoxDescriptor {
     event PartsLocked();
 
     event DataURIToggled(bool enabled);
@@ -125,15 +125,15 @@ interface IBoxDescriptor {
 
     function setBaseURI(string calldata baseURI) external;
 
-    function tokenURI(uint256 tokenId, IBoxSeeder.Seed memory seed) external view returns (string memory);
+    function tokenURI(uint256 tokenId, IArbiBoxSeeder.Seed memory seed) external view returns (string memory);
 
-    function dataURI(uint256 tokenId, IBoxSeeder.Seed memory seed) external view returns (string memory);
+    function dataURI(uint256 tokenId, IArbiBoxSeeder.Seed memory seed) external view returns (string memory);
 
     function genericDataURI(
         string calldata name,
         string calldata description,
-        IBoxSeeder.Seed memory seed
+        IArbiBoxSeeder.Seed memory seed
     ) external view returns (string memory);
 
-    function generateSVGImage(IBoxSeeder.Seed memory seed) external view returns (string memory);
+    function generateSVGImage(IArbiBoxSeeder.Seed memory seed) external view returns (string memory);
 }

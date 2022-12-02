@@ -2,17 +2,17 @@
 
 pragma solidity ^0.8.6;
 
-import { IBoxSeeder } from './interfaces/IBoxSeeder.sol';
-import { IBoxDescriptor } from './interfaces/IBoxDescriptor.sol';
+import { IArbiBoxSeeder } from './interfaces/IArbiBoxSeeder.sol';
+import { IArbiBoxDescriptor } from './interfaces/IArbiBoxDescriptor.sol';
 
-contract BoxSeeder is IBoxSeeder {
+contract ArbiBoxSeeder is IArbiBoxSeeder {
     /**
-     * @notice Generate a pseudo-random ArbiBox seed using the previous blockhash and box ID.
+     * @notice Generate a pseudo-random ArbiBox seed using the previous blockhash and arbibox ID.
      */
     // prettier-ignore
-    function generateSeed(uint256 boxId, IBoxDescriptor descriptor) external view override returns (Seed memory) {
+    function generateSeed(uint256 arbiboxId, IArbiBoxDescriptor descriptor) external view override returns (Seed memory) {
         uint256 pseudorandomness = uint256(
-            keccak256(abi.encodePacked(blockhash(block.number - 1), boxId))
+            keccak256(abi.encodePacked(blockhash(block.number - 1), arbiboxId))
         );
 
         uint256 bodyCount = descriptor.bodyCount();
