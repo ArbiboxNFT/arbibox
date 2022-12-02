@@ -49,7 +49,7 @@
 
 pragma solidity ^0.8.6;
 
-import './ArbiBoxGovernanceInterfacessol';
+import './ArbiBoxGovernanceInterfaces.sol';
 
 contract ArbiBoxGovernanceLogicV1 is ArbiBoxGovernanceStorageV1, ArbiBoxGovernanceEvents {
     /// @notice The name of this contract
