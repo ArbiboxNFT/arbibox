@@ -1,0 +1,8 @@
+{
+  "name": "arbibox",
+  "version": "1.0.0",
+  "description": "Smart Contracts for Arbibox NFTs",
+  "main": "index.js",
+  "repository": "https://github.com/ArbiboxNFT/arbibox",
+  "license": "MIT"
+}
