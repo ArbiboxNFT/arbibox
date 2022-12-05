@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.6;
 
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
@@ -140,11 +140,11 @@ contract ArbinautsNFTVault is ReentrancyGuard, Ownable, IERC721Receiver, IERC115
         uint256[] calldata,
         uint256[] calldata,
         bytes calldata
-    ) external pure returns (bytes4) {
+    ) external pure override returns (bytes4) {
         return IERC1155Receiver.onERC1155BatchReceived.selector;
     }
 
-    function supportsInterface(bytes4 interfaceID) external pure returns (bool) {
+    function supportsInterface(bytes4 interfaceID) external pure override returns (bool) {
         return interfaceID == this.supportsInterface.selector;
     }
 
