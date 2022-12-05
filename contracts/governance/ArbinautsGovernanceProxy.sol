@@ -2,8 +2,6 @@
 
 /// @title The Arbinauts Governance proxy contract
 
-
-
 // LICENSE
 // ArbinautsGovernanceProxy.sol is a modified version of Compound Lab's GovernorBravoDelegator.sol:
 // https://github.com/compound-finance/compound-protocol/blob/b9b14038612d846b83f8a009a82c38974ff2dcfe/contracts/Governance/GovernorBravoDelegator.sol

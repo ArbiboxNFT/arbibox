@@ -102,7 +102,7 @@ contract ArbinautsToken is IArbinautsToken, Ownable, ERC721Checkpointable {
         IArbinautsDescriptor _descriptor,
         IArbinautsSeeder _seeder,
         IProxyRegistry _proxyRegistry
-    ) ERC721("Arbinauts", "SWEEPER") {
+    ) ERC721("Arbinauts", "ARBINAUTS") {
         arbinautsTreasury = _arbinautsTreasury;
         minter = _minter;
         descriptor = _descriptor;

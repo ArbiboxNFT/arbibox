@@ -2,8 +2,6 @@
 
 /// @title The Arbinauts Governance logic version 1
 
-
-
 // LICENSE
 // ArbinautsGovernanceLogicV1.sol is a modified version of Compound Lab's GovernorBravoDelegate.sol:
 // https://github.com/compound-finance/compound-protocol/blob/b9b14038612d846b83f8a009a82c38974ff2dcfe/contracts/Governance/GovernorBravoDelegate.sol
@@ -15,7 +13,7 @@
 //
 // MODIFICATIONS
 // ArbinautsGovernanceLogicV1 adds:
-// - Optional Proposal Threshold basis points instead of fixed number
+// - Proposal Threshold basis points instead of fixed number
 //   due to the Arbinaut token's increasing supply
 //
 // - Quorum Votes basis points instead of fixed number
@@ -62,7 +60,7 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
     uint256 public constant MAX_PROPOSAL_THRESHOLD_BPS = 1_000; // 1,000 basis points or 10%
 
     /// @notice The minimum setable voting period
-    uint256 public constant MIN_VOTING_PERIOD = 100; // 5_760; // About 24 hours
+    uint256 public constant MIN_VOTING_PERIOD = 5_760; // About 24 hours
 
     /// @notice The max setable voting period
     uint256 public constant MAX_VOTING_PERIOD = 80_640; // About 2 weeks
@@ -92,7 +90,7 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
     /**
      * @notice Used to initialize the contract during delegator contructor
      * @param timelock_ The address of the ArbinautsGovernanceExecutor
-     * @param arbinauts_ The address of the SWEEPER tokens
+     * @param arbinauts_ The address of the ARBINAUT tokens
      * @param vetoer_ The address allowed to unilaterally veto proposals
      * @param votingPeriod_ The initial voting period
      * @param votingDelay_ The initial voting delay
@@ -140,10 +138,7 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
         votingPeriod = votingPeriod_;
         votingDelay = votingDelay_;
         proposalThresholdBPS = proposalThresholdBPS_;
-        proposalThresholdStrict = 5;
-        useProposalThresholdBPS = true;
         quorumVotesBPS = quorumVotesBPS_;
-        targetsRestricted = true;
     }
 
     struct ProposalTemp {
@@ -168,15 +163,13 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
         uint256[] memory values,
         string[] memory signatures,
         bytes[] memory calldatas,
-        string memory description,
-        string memory openseaSlug,
-        address project
+        string memory description
     ) public returns (uint256) {
         ProposalTemp memory temp;
 
         temp.totalSupply = arbinauts.totalSupply();
 
-        temp.proposalThreshold = useProposalThresholdBPS ? bps2Uint(proposalThresholdBPS, temp.totalSupply) : proposalThresholdStrict;
+        temp.proposalThreshold = bps2Uint(proposalThresholdBPS, temp.totalSupply);
 
         require(
             arbinauts.getPriorVotes(msg.sender, block.number - 1) > temp.proposalThreshold,
@@ -190,12 +183,6 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
         );
         require(targets.length != 0, 'ArbinautsGovernance::propose: must provide actions');
         require(targets.length <= proposalMaxOperations, 'ArbinautsGovernance::propose: too many actions');
-
-        if(targetsRestricted) {
-            for(uint i = 0; i < targets.length; i++) {
-                require(allowedTargets[targets[i]], 'ArbinautsGovernance::propose: target not allowed');
-            }
-        }
 
         temp.latestProposalId = latestProposalIds[msg.sender];
         if (temp.latestProposalId != 0) {
@@ -225,8 +212,6 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
         newProposal.values = values;
         newProposal.signatures = signatures;
         newProposal.calldatas = calldatas;
-        newProposal.openseaSlug = openseaSlug;
-        newProposal.project = project;
         newProposal.startBlock = temp.startBlock;
         newProposal.endBlock = temp.endBlock;
         newProposal.forVotes = 0;
@@ -248,9 +233,7 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
             calldatas,
             newProposal.startBlock,
             newProposal.endBlock,
-            description,
-            openseaSlug,
-            project
+            description
         );
 
         /// @notice Updated event with `proposalThreshold` and `quorumVotes`
@@ -265,9 +248,7 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
             newProposal.endBlock,
             newProposal.proposalThreshold,
             newProposal.quorumVotes,
-            description,
-            openseaSlug,
-            project
+            description
         );
 
         return newProposal.id;
@@ -579,27 +560,6 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
     }
 
     /**
-     * @notice Admin function for setting the proposal threshold strict amount
-     * @param newProposalThresholdStrict new proposal threshold
-     */
-    function _setProposalThresholdStrict(uint256 newProposalThresholdStrict) external {
-        require(msg.sender == admin, 'ArbinautsGovernance::_setProposalThresholdStrict: admin only');
-        uint256 oldProposalThresholdStrict = proposalThresholdStrict;
-        proposalThresholdStrict = newProposalThresholdStrict;
-
-        emit ProposalThresholdStrictSet(oldProposalThresholdStrict, proposalThresholdStrict);
-    }
-
-    /**
-     * @notice Admin function for setting the proposal threshold method to use
-     * @param _useProposalThresholdBPS whether to use BPS or Strict
-     */
-    function _setUseProposalThresholdBPS(bool _useProposalThresholdBPS) external {
-        require(msg.sender == admin, 'ArbinautsGovernance::_setProposalThresholdStrict: admin only');
-        useProposalThresholdBPS = _useProposalThresholdBPS;
-    }
-
-    /**
      * @notice Admin function for setting the quorum votes basis points
      * @dev newQuorumVotesBPS must be greater than the hardcoded min
      * @param newQuorumVotesBPS new proposal threshold
@@ -681,30 +641,11 @@ contract ArbinautsGovernanceLogicV1 is ArbinautsGovernanceStorageV1, ArbinautsGo
     }
 
     /**
-     * @notice Sets a target address as allowed or unallowed
-     */
-    function _setAllowedTarget(address _target, bool _allowed) external {
-        // Check caller = admin
-        require(msg.sender == admin, 'ArbinautsGovernance::_setAllowedTarget: admin only');
-
-        allowedTargets[_target] = _allowed;
-    }
-
-    /**
-     * @notice Sets a restriction to require target addresses to be allowed
-     */
-    function _setTargetsRestricted(bool _targetsRestricted) external {
-        // Check caller = admin
-        require(msg.sender == admin, 'ArbinautsGovernance::_setTargetsRestricted: admin only');
-        targetsRestricted = _targetsRestricted;
-    }
-
-    /**
      * @notice Current proposal threshold using Arbinaut Total Supply
      * Differs from `GovernerBravo` which uses fixed amount
      */
     function proposalThreshold() public view returns (uint256) {
-        return useProposalThresholdBPS ? bps2Uint(proposalThresholdBPS, arbinauts.totalSupply()) : proposalThresholdStrict;
+        return bps2Uint(proposalThresholdBPS, arbinauts.totalSupply());
     }
 
     /**

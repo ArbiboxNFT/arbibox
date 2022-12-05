@@ -9,7 +9,7 @@
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/6618f9f18424ade44116d0221719f4c93be6a078/contracts/token/ERC721/extensions/ERC721Enumerable.sol
 //
 // ERC721Enumerable.sol source code copyright OpenZeppelin licensed under the MIT License.
-// With modifications by Sweeperders Treasury.
+// With modifications by Arbinauts Treasury.
 //
 // MODIFICATIONS:
 // Consumes modified `ERC721` contract. See notes in `ERC721.sol`.

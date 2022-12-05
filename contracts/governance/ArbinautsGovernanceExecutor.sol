@@ -1,21 +1,19 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-/// @title The Arbinauts Governance executor and Governance
-
-
+/// @title The Arbinauts Governance executor and treasury
 
 // LICENSE
 // ArbinautsGovernanceExecutor.sol is a modified version of Compound Lab's Timelock.sol:
 // https://github.com/compound-finance/compound-protocol/blob/20abad28055a2f91df48a90f8bb6009279a4cb35/contracts/Timelock.sol
 //
 // Timelock.sol source code Copyright 2020 Compound Labs, Inc. licensed under the BSD-3-Clause license.
-// With modifications by Arbinaut Governance.
+// With modifications by Arbinauts Governance.
 //
 // Additional conditions of BSD-3-Clause can be found here: https://opensource.org/licenses/BSD-3-Clause
 //
 // MODIFICATIONS
 // ArbinautsGovernanceExecutor.sol modifies Timelock to use Solidity 0.8.x receive(), fallback(), and built-in over/underflow protection
-// This contract acts as executor of Arbinauts Governance governance and its Governance, so it has been modified to accept ETH.
+// This contract acts as executor of Arbinauts Governance and its treasury, so it has been modified to accept ETH.
 
 pragma solidity ^0.8.6;
 
@@ -49,7 +47,7 @@ contract ArbinautsGovernanceExecutor {
     );
 
     uint256 public constant GRACE_PERIOD = 14 days;
-    uint256 public constant MINIMUM_DELAY = 30 minutes;
+    uint256 public constant MINIMUM_DELAY = 2 days;
     uint256 public constant MAXIMUM_DELAY = 30 days;
 
     address public admin;
@@ -58,20 +56,16 @@ contract ArbinautsGovernanceExecutor {
 
     mapping(bytes32 => bool) public queuedTransactions;
 
-    constructor(uint256 delay_) {
+    constructor(address admin_, uint256 delay_) {
         require(delay_ >= MINIMUM_DELAY, 'ArbinautsGovernanceExecutor::constructor: Delay must exceed minimum delay.');
         require(delay_ <= MAXIMUM_DELAY, 'ArbinautsGovernanceExecutor::setDelay: Delay must not exceed maximum delay.');
 
+        admin = admin_;
         delay = delay_;
     }
 
-    function initialize(address admin_) external {
-        require(admin == address(0), 'ArbinautsGovernanceExecutor::Can only be initialized once');
-        admin = admin_;
-    }
-
     function setDelay(uint256 delay_) public {
-        require(msg.sender == admin, 'ArbinautsGovernanceExecutor::setDelay: Call must come from admin.');
+        require(msg.sender == address(this), 'ArbinautsGovernanceExecutor::setDelay: Call must come from ArbinautsGovernanceExecutor.');
         require(delay_ >= MINIMUM_DELAY, 'ArbinautsGovernanceExecutor::setDelay: Delay must exceed minimum delay.');
         require(delay_ <= MAXIMUM_DELAY, 'ArbinautsGovernanceExecutor::setDelay: Delay must not exceed maximum delay.');
         delay = delay_;
